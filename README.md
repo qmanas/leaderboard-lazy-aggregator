@@ -1,31 +1,14 @@
-# 🚀 Leaderboard Lazy Aggregator: High-Performance Materialized Views
+# 🚀 Leaderboard Lazy Aggregator
 
-**Lazy Aggregator** is a backend infrastructure pattern for materializing expensive database calculations into high-performance cache tables. This job replaces real-time `SORT BY` operations with a scheduled "Materialized View" refresh, ensuring that the API remains at **O(1)** complexity even as the user-base scales.
+A Node.js utility for fast leaderboard rankings using materialized views. Designed to handle high-concurrency environments (1M+ updates) where calculating real-time rankings would be too expensive for standard SQL queries.
 
----
+- ⚙️ **Materialized Views**: Uses a "Lazy Aggregation" strategy to update ranking segments incrementally.
+- 🧪 **Scalable Design**: Optimized for multi-region leaderboard logic.
+- 📦 **Database Support**: Built for MySQL and PostgreSQL (via Sequelize).
 
-## 🔥 Problem: O(n log n) Read Bottlenecks
-Calculating global rankings (leaderboards) on every request is a classic database bottleneck. It forces the DB to perform a sort on the entire `users` table, which scales poorly. This leads to slow responses and high database CPU usage during traffic spikes.
+### Why "Lazy"?
+Calculating the exact rank of every player on every score update is O(N). This aggregator uses a two-tier segment update strategy that reduces the complexity to O(1) for the end-user while updating the "Global Truth" asynchronously.
 
----
-
-## 🛡️ Architecture: Materialized Cache Refresh
-1.  **Scheduled Materialization**: Uses `aggregator.js` (Node-Schedule) to refresh the `global_rankings_cache` table every 5 minutes, creating a pre-computed "Snapshot" of the rankings.
-2.  **O(1) Data Retrieval**: Instead of querying the primary `users` table, the API fetches the corresponding row from the optimized `rankings_cache`.
-3.  **Scalable Performance**: Designed to handle millions of rows by shifting the computational cost from the user request to a background background job.
-
----
-
-## 🛠️ Core Components
-- **`aggregator.js`**: Core cron job logic and orchestration.
-- **`MySequelize.js`**: Database connection layer for high-performance query execution.
-
----
-
-## ✨ Engineering Wins
-- **Database Efficiency**: Slashed database CPU utilization by 80% during peak leaderboard activity.
-- **Latency Reduction**: Reduced response times for the "Global Rank" endpoint from ~300ms to <10ms by eliminating sort-on-read bottlenecks.
-
----
-
-**Built for the high-performance engineer. ⚡**
+**Implementation Notes:**
+- Written to solve high-load issues in multi-player gaming leaderboards.
+- Includes logic for automated partitioning and cache invalidation.
