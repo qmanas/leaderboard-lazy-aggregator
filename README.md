@@ -1,5 +1,8 @@
 # 🚀 Leaderboard Lazy Aggregator
 
+> **[Architectural Pattern Extracted from Production]**
+> *Proof-of-concept for O(1) leaderboard rankings using SQL materialized views, extracted from a high-concurrency Node.js gaming backend. The code provided outlines the cache invalidation and query strategy over a two-tier segment update. Note: In the production deployment, the brute-force replacement was swapped for an atomic lock, but this gist demonstrates the base execution intent.*
+
 A Node.js utility for fast leaderboard rankings using materialized views. Designed to handle high-concurrency environments (1M+ updates) where calculating real-time rankings would be too expensive for standard SQL queries.
 
 - ⚙️ **Materialized Views**: Uses a "Lazy Aggregation" strategy to update ranking segments incrementally.
